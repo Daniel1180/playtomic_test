@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 
 public class ChargeRequest {
-
+	
 	public ChargeRequest(@NonNull String creditCardNumber, @NonNull BigDecimal amount) {
-		this.creditCardNumber = creditCardNumber;
-		this.amount = amount;
+    	this.creditCardNumber = creditCardNumber;
+    	this.amount = amount;
 	}
 
 	@NonNull
@@ -20,5 +20,5 @@ public class ChargeRequest {
     @NonNull
     @JsonProperty("amount")
     BigDecimal amount;
-    
+
 }

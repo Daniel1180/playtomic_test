@@ -10,11 +10,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.playtomic.tests.wallet.exceptions.StripeRestTemplateResponseErrorHandler;
 import com.playtomic.tests.wallet.exceptions.StripeServiceException;
+import com.playtomic.tests.wallet.model.ChargeRequest;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 
@@ -27,7 +26,7 @@ import lombok.NonNull;
 @Service
 public class StripeService {
 
-    @NonNull
+	@NonNull
     private URI chargesUri;
 
     @NonNull
@@ -35,9 +34,9 @@ public class StripeService {
 
     @NonNull
     private RestTemplate restTemplate;
-    
-    public StripeService(@Value("${stripe.simulator.charges-uri}") @NonNull URI chargesUri,
-                         @Value("${stripe.simulator.refunds-uri}") @NonNull URI refundsUri,
+
+    public StripeService(@Value("stripe.simulator.charges-uri") @NonNull URI chargesUri,
+                         @Value("stripe.simulator.refunds-uri") @NonNull URI refundsUri,
                          @NotNull RestTemplateBuilder restTemplateBuilder) {
         this.chargesUri = chargesUri;
         this.refundsUri = refundsUri;
@@ -59,12 +58,9 @@ public class StripeService {
      */
     public void charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
         ChargeRequest body = new ChargeRequest(creditCardNumber, amount);
-        
         // Object.class because we don't read the body here.
         restTemplate.postForObject(chargesUri, body, Object.class);
     }
-    
-    
 
     /**
      * Refunds the specified payment.
@@ -72,24 +68,5 @@ public class StripeService {
     public void refund(@NonNull String paymentId) throws StripeServiceException {
         // Object.class because we don't read the body here.
         restTemplate.postForEntity(chargesUri.toString(), null, Object.class, paymentId);
-    }
-
-    @AllArgsConstructor
-    private static class ChargeRequest {
-
-		public ChargeRequest(@NonNull String creditCardNumber, @NonNull BigDecimal amount) {
-			this.creditCardNumber = creditCardNumber;
-			this.amount = amount;
-		}
-
-		@NonNull
-        @JsonProperty("credit_card")
-        String creditCardNumber;
-
-        @NonNull
-        @JsonProperty("amount")
-        BigDecimal amount;
-        
-        
     }
 }
